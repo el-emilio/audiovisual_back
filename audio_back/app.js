@@ -1,6 +1,9 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
+import routerProducts from './routes/routesProducts.js'
+import { errorHandler } from './middleware/errors.js'
+import connectionMongoDB from './config/db.js'
 
 dotenv.config()
 
@@ -8,26 +11,15 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 5000
 
+//////conexion a mongo//////
+connectionMongoDB();
+
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({extended: true}))
 
-app.get('/api/products', (req, res) => {
-    console.log(`Actualizacion`)
-    res.send('Hello World!')
-})
-
-app.post('/api/products', (req, res) => {
-    console.log(`Actualizacion`)
-    const products=[
-        {name: "camara profesional", id: "1"},
-        {name: "micro profesional", id: "2"}
-    ]
-
-    res.json({
-        "productos": products
-    });
-})
+app.use('/api/products', routerProducts);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}`)
