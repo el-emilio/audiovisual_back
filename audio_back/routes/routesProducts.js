@@ -1,8 +1,71 @@
 import express from 'express';
+import Product from '../models/product.js';
 
 const routerProducts = express.Router();
 //mongodb+srv://0254998_db_user:P4zzw0rdChido@cluster0.owvetya.mongodb.net/?appName=Cluster0
 ///////RUTAS DE PRODUCTOS///////
+
+routerProducts.post('/',async(req, res,next)=>{
+    console.log(req.body)
+
+    if (!req.body.name || !req.body.description || !req.body.price){
+        next(new Error("Name, price and description required"))
+        return;
+    }
+
+    const{name, description, price}=req.body;
+
+    try{
+        const new_product=new Product({
+            name,
+            description,
+            price
+        })
+
+        await new_product.save();
+    }
+    catch(err){
+        console.error(err);
+        next(err);
+    }
+
+    next(new Error("Method not yet implemented"));
+});
+
+routerProducts.get("/:id", async(req, res, next)=>{
+    const {id}=req.params;
+
+    try{
+        const found=await Product.findById(id);
+
+        res.status(200).json(found);
+    }
+
+
+    catch(err){
+        console.error(err);
+        next(err);
+    }
+
+    
+});
+
+routerProducts.get("/", async(req, res, next)=>{
+    try{
+        const found=await Product.find();
+
+        res.status(200).json(found);
+    }
+
+    catch(err){
+        console.error(err);
+        next(err);
+    }
+
+    
+});
+
+/*
 routerProducts.get('/', (req, res) => {
     console.log(`Actualizacion`)
 
@@ -14,6 +77,7 @@ routerProducts.get('/', (req, res) => {
 
     res.send('Hello World!');
 })
+    */
 
 routerProducts.post('/', (req, res) => {
     console.log(`Actualizacion`)
